@@ -1,20 +1,3 @@
-// function id(num){
-//     num = 1;
-//     return function () {
-//         num++;
-//     }
-// }
-
-// FIX: remove unused React import (it breaks createElement)
-// const { createElement } = require("react");
-
-// let userId = id();
-// userId();
-// userId();
-// userId();
-
-
-// FIX: if localStorage empty → workers must be []
 const workers = JSON.parse(localStorage.getItem("workers")) || [];
 
 const workersContainer = document.getElementById("workersContainer");
