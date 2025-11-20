@@ -201,7 +201,6 @@ addWorker.addEventListener('click', (e) => {
             dateEnd: end
         });
     }
-
     let id = workers.length + 1;
 
     const newWorker = {
