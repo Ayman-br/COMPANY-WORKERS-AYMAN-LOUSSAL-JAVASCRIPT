@@ -201,6 +201,7 @@ addWorker.addEventListener('click', (e) => {
             dateEnd: end
         });
     }
+
     let id = workers.length + 1;
 
     const newWorker = {
@@ -231,7 +232,7 @@ openModalBtn.addEventListener('click', () => {
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden', 'false');
 
-    modal.setAttribute("tabindex", "0"); 
+    modal.setAttribute("tabindex", "0");
     modal.focus();
 
     modalRenderCard();
@@ -281,4 +282,3 @@ function modalRenderCard() {
         modal.appendChild(card);
     });
 }
-
