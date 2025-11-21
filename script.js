@@ -1,4 +1,120 @@
-const workers = JSON.parse(localStorage.getItem("workers")) || [];
+// const workers = JSON.parse(localStorage.getItem("workers")) || [];
+const workers = [
+  {
+    id: 1,
+    name: "Ayman Lousal",
+    role: "Receptionist",
+    email: "ayman.lousal@example.com",
+    phone: "+212 600 001 001",
+    photo: "https://randomuser.me/api/portraits/men/11.jpg",
+    experiences: [
+      { role: "Assistant", company: "Hotel Atlas", start: "2019-01-10", end: "2020-05-20" }
+    ]
+  },
+  {
+    id: 2,
+    name: "Kendra Smith",
+    role: "Manager",
+    email: "kendra.smith@example.com",
+    phone: "+212 600 001 002",
+    photo: "https://randomuser.me/api/portraits/women/22.jpg",
+    experiences: [
+      { role: "Supervisor", company: "Morocco Resorts", start: "2018-03-01", end: "2021-09-15" },
+      { role: "Assistant Manager", company: "RedHotel", start: "2021-10-01", end: "2023-04-12" }
+    ]
+  },
+  {
+    id: 3,
+    name: "Oracle Touzani",
+    role: "Cleaning",
+    email: "oracle.touzani@example.com",
+    phone: "+212 600 001 003",
+    photo: "https://randomuser.me/api/portraits/women/35.jpg",
+    experiences: [
+      { role: "Cleaner", company: "Tanger Hotel", start: "2020-02-15", end: "2022-08-03" }
+    ]
+  },
+  {
+    id: 4,
+    name: "Badre Oxaam",
+    role: "IT Technician",
+    email: "badreoxaam@example.com",
+    phone: "+212 600 001 004",
+    photo: "https://randomuser.me/api/portraits/men/44.jpg",
+    experiences: [
+      { role: "Junior IT Tech", company: "DataPlus", start: "2017-06-01", end: "2019-12-20" },
+      { role: "IT Support", company: "MegaTech", start: "2020-01-01", end: "2023-10-18" }
+    ]
+  },
+  {
+    id: 5,
+    name: "Imane Baraka",
+    role: "Security Agent",
+    email: "imanebara@example.com",
+    phone: "+212 600 001 005",
+    photo: "https://randomuser.me/api/portraits/women/45.jpg",
+    experiences: [
+      { role: "Security Officer", company: "Marjane", start: "2016-03-01", end: "2019-08-01" }
+    ]
+  },
+  {
+    id: 6,
+    name: "Simo Amrani",
+    role: "Manager",
+    email: "simo@example.com",
+    phone: "+212 600 001 006",
+    photo: "https://randomuser.me/api/portraits/men/55.jpg",
+    experiences: [
+      { role: "Team Leader", company: "Novotel", start: "2018-07-01", end: "2020-01-01" },
+      { role: "Operations Manager", company: "Ibis Hotel", start: "2020-01-15", end: "2024-06-01" }
+    ]
+  },
+  {
+    id: 7,
+    name: "Sara Idrissi",
+    role: "Receptionist",
+    email: "sarai@example.com",
+    phone: "+212 600 001 007",
+    photo: "https://randomuser.me/api/portraits/women/14.jpg",
+    experiences: [
+      { role: "Front Desk", company: "Royal Hotel", start: "2021-02-01", end: "2023-07-30" }
+    ]
+  },
+  {
+    id: 8,
+    name: "Mouad El Filali",
+    role: "Cleaning",
+    email: "mouad@example.com",
+    phone: "+212 600 001 008",
+    photo: "https://randomuser.me/api/portraits/men/66.jpg",
+    experiences: [
+      { role: "Housekeeper", company: "Oasis Hotel", start: "2019-05-01", end: "2022-12-10" }
+    ]
+  },
+  {
+    id: 9,
+    name: "Nadia Rami",
+    role: "IT Technician",
+    email: "nadia@example.com",
+    phone: "+212 600 001 009",
+    photo: "https://randomuser.me/api/portraits/women/67.jpg",
+    experiences: [
+      { role: "IT Helpdesk", company: "Inwi", start: "2020-03-01", end: "2024-01-01" }
+    ]
+  },
+  {
+    id: 10,
+    name: "Zakaria Harrouchi",
+    role: "Security Agent",
+    email: "zakaria@example.com",
+    phone: "+212 600 001 010",
+    photo: "https://randomuser.me/api/portraits/men/77.jpg",
+    experiences: [
+      { role: "Security Guard", company: "Carrefour", start: "2019-01-01", end: "2023-11-20" }
+    ]
+  }
+];
+
 
 const workersContainer = document.getElementById("workersContainer");
 
@@ -264,4 +380,63 @@ function modalRenderCard() {
 
         modal.appendChild(card);
     });
+
 }
+
+const ResModalBtn = document.getElementById('Réception-btn');
+const servModalBtn = document.getElementById('serveurs-btn');
+const securetModalBtn = document.getElementById('sécurité-btn');
+const personeModalBtn = document.getElementById('personnel-btn');
+const archiveModalBtn = document.getElementById('archives');
+
+ResModalBtn.addEventListener('click', () => {
+    lastFocusedElement = document.activeElement;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    modal.setAttribute("tabindex", "0");
+    modal.focus();
+
+    receptionWorkers();
+});
+
+function receptionWorkers(){
+const resptionRoom = workers.filter(worker => worker.role === "Receptionist" || worker.role === "Manager" || worker.role === "Cleaning");
+
+if (resptionRoom.length === 0) {
+    container.innerHTML = "<p>No workers for these roles.</p>";
+    openModal?.(); 
+    return;
+  }
+
+  resptionRoom.forEach(worker => {
+    const card = document.createElement('div');
+        card.className = "user-info w-full p-4 bg-white shadow rounded-lg flex gap-4 items-center border mt-4";
+
+        const img = document.createElement('img');
+        img.src = worker.photo;
+        img.alt = worker.nom;
+        img.className = "w-16 h-16 rounded-full object-cover";
+
+        const info = document.createElement('div');
+        info.className = "flex flex-col";
+
+        const name = document.createElement('h2');
+        name.textContent = worker.nom;
+        name.className = "text-lg font-semibold";
+
+        const role = document.createElement('p');
+        role.textContent = worker.role;
+        role.className = "text-sm text-gray-600";
+
+        info.appendChild(name);
+        info.appendChild(role);
+
+        card.appendChild(img);
+        card.appendChild(info);
+
+        modal.appendChild(card);
+    
+  });
+
+}
+
