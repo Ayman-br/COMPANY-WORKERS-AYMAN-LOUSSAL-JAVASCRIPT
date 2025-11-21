@@ -419,12 +419,29 @@ securetModalBtn.addEventListener('click', () => {
     
 });
 
+personeModalBtn.addEventListener('click', () => {
+    lastFocusedElement = document.activeElement;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    modal.setAttribute("tabindex", "0");
+    modal.focus();
+    modalRenderCard();
+});
+
+archiveModalBtn.addEventListener('click', () => {
+    lastFocusedElement = document.activeElement;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    modal.setAttribute("tabindex", "0");
+    modal.focus();
+    managerWorkers();
+});
 
 
 function receptionWorkers(){
-const resptionRoom = workers.filter(worker => worker.role === "Receptionist" || worker.role === "Manager" || worker.role === "Cleaning");
+const resptionRoom = workers.filter(worker => worker.role === "Receptionist" || worker.role === "Manager" || worker.role === "Cleaning" || worker.role === "other");
 
-
+    modal.innerHTML = ``;
 
   resptionRoom.forEach(worker => {
     const card = document.createElement('div');
@@ -461,7 +478,7 @@ const resptionRoom = workers.filter(worker => worker.role === "Receptionist" || 
 function serverWorkers(){
 const serverRoom = workers.filter(worker => worker.role === "IT Technician" || worker.role === "Manager" || worker.role === "Cleaning");
 
-
+    modal.innerHTML = ``;
 
   serverRoom.forEach(worker => {
     const card = document.createElement('div');
@@ -498,7 +515,7 @@ const serverRoom = workers.filter(worker => worker.role === "IT Technician" || w
 function securetyWorkers(){
 const secureteRoom = workers.filter(worker => worker.role === "Security Agent" || worker.role === "Manager" || worker.role === "Cleaning");
 
-
+    modal.innerHTML = ``;
 
   secureteRoom.forEach(worker => {
     const card = document.createElement('div');
@@ -529,5 +546,45 @@ const secureteRoom = workers.filter(worker => worker.role === "Security Agent" |
         modal.appendChild(card);
     
   });
+
+}
+
+function managerWorkers(){
+const archiveRoom = workers.filter(worker => worker.role === "Manager");
+
+    modal.innerHTML = ``;
+
+  archiveRoom.forEach(worker => {
+    const card = document.createElement('div');
+        card.className = "user-info w-full p-4 bg-white shadow rounded-lg flex gap-4 items-center border mt-4";
+
+        const img = document.createElement('img');
+        img.src = worker.photo;
+        img.alt = worker.nom;
+        img.className = "w-16 h-16 rounded-full object-cover";
+
+        const info = document.createElement('div');
+        info.className = "flex flex-col";
+
+        const name = document.createElement('h2');
+        name.textContent = worker.nom;
+        name.className = "text-lg font-semibold";
+
+        const role = document.createElement('p');
+        role.textContent = worker.role;
+        role.className = "text-sm text-gray-600";
+
+        info.appendChild(name);
+        info.appendChild(role);
+
+        card.appendChild(img);
+        card.appendChild(info);
+
+        modal.appendChild(card);
+        
+        card.addEventListener('click', () =>{
+    
+        })
+    });
 
 }
