@@ -14,7 +14,7 @@ const workers = [
   {
     id: 2,
     name: "Kendra Smith",
-    role: "Manager",
+    role: "Cleaning",
     email: "kendra.smith@example.com",
     phone: "+212 600 001 002",
     photo: "https://randomuser.me/api/portraits/women/22.jpg",
@@ -399,14 +399,31 @@ ResModalBtn.addEventListener('click', () => {
     receptionWorkers();
 });
 
+servModalBtn.addEventListener('click', () => {
+    lastFocusedElement = document.activeElement;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    modal.setAttribute("tabindex", "0");
+    modal.focus();
+    serverWorkers()
+    
+});
+
+securetModalBtn.addEventListener('click', () => {
+    lastFocusedElement = document.activeElement;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    modal.setAttribute("tabindex", "0");
+    modal.focus();
+    
+});
+
+
+
 function receptionWorkers(){
 const resptionRoom = workers.filter(worker => worker.role === "Receptionist" || worker.role === "Manager" || worker.role === "Cleaning");
 
-if (resptionRoom.length === 0) {
-    container.innerHTML = "<p>No workers for these roles.</p>";
-    openModal?.(); 
-    return;
-  }
+
 
   resptionRoom.forEach(worker => {
     const card = document.createElement('div');
@@ -440,3 +457,39 @@ if (resptionRoom.length === 0) {
 
 }
 
+function serverWorkers(){
+const serverRoom = workers.filter(worker => worker.role === "IT Technician" || worker.role === "Manager" || worker.role === "Cleaning");
+
+
+
+  serverRoom.forEach(worker => {
+    const card = document.createElement('div');
+        card.className = "user-info w-full p-4 bg-white shadow rounded-lg flex gap-4 items-center border mt-4";
+
+        const img = document.createElement('img');
+        img.src = worker.photo;
+        img.alt = worker.nom;
+        img.className = "w-16 h-16 rounded-full object-cover";
+
+        const info = document.createElement('div');
+        info.className = "flex flex-col";
+
+        const name = document.createElement('h2');
+        name.textContent = worker.nom;
+        name.className = "text-lg font-semibold";
+
+        const role = document.createElement('p');
+        role.textContent = worker.role;
+        role.className = "text-sm text-gray-600";
+
+        info.appendChild(name);
+        info.appendChild(role);
+
+        card.appendChild(img);
+        card.appendChild(info);
+
+        modal.appendChild(card);
+    
+  });
+
+}

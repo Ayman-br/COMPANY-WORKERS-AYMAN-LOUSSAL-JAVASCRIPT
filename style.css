@@ -9,16 +9,21 @@
   }
   .overlay.open { display: flex; }
   .modal {
-    background: white;
-    padding: 20px;
-    width: 90%;
-    max-width: 480px;
-    border-radius: 8px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-    transform: translateY(8px);
-    opacity: 0;
-    transition: transform .18s ease, opacity .18s ease;
-  }
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 480px;
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  transform: translateY(8px);
+  opacity: 0;
+  transition: transform .18s ease, opacity .18s ease;
+
+  /* ⭐ SCROLL FIX ⭐ */
+  max-height: 80vh;    /* limit modal height */
+  overflow-y: auto;    /* enable scroll */
+}
+
 
 .overlay.open .modal { transform: translateY(0); opacity: 1; }
 
