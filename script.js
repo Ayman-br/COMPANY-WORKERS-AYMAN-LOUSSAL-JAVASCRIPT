@@ -1,590 +1,413 @@
+// =============================================
+// 1. DATA STORAGE AND CONFIGURATION
+// =============================================
+
+// Get workers from browser storage or start with empty array
 const workers = JSON.parse(localStorage.getItem("workers")) || [];
-// const workers = [
-//   {
-//     id: 1,
-//     name: "Ayman Lousal",
-//     role: "Receptionist",
-//     email: "ayman.lousal@example.com",
-//     phone: "+212 600 001 001",
-//     photo: "https://randomuser.me/api/portraits/men/11.jpg",
-//     experiences: [
-//       { role: "Assistant", company: "Hotel Atlas", start: "2019-01-10", end: "2020-05-20" }
-//     ]
-//   },
-//   {
-//     id: 2,
-//     name: "Kendra Smith",
-//     role: "Cleaning",
-//     email: "kendra.smith@example.com",
-//     phone: "+212 600 001 002",
-//     photo: "https://randomuser.me/api/portraits/women/22.jpg",
-//     experiences: [
-//       { role: "Supervisor", company: "Morocco Resorts", start: "2018-03-01", end: "2021-09-15" },
-//       { role: "Assistant Manager", company: "RedHotel", start: "2021-10-01", end: "2023-04-12" }
-//     ]
-//   },
-//   {
-//     id: 3,
-//     name: "Oracle Touzani",
-//     role: "Cleaning",
-//     email: "oracle.touzani@example.com",
-//     phone: "+212 600 001 003",
-//     photo: "https://randomuser.me/api/portraits/women/35.jpg",
-//     experiences: [
-//       { role: "Cleaner", company: "Tanger Hotel", start: "2020-02-15", end: "2022-08-03" }
-//     ]
-//   },
-//   {
-//     id: 4,
-//     name: "Badre Oxaam",
-//     role: "IT Technician",
-//     email: "badreoxaam@example.com",
-//     phone: "+212 600 001 004",
-//     photo: "https://randomuser.me/api/portraits/men/44.jpg",
-//     experiences: [
-//       { role: "Junior IT Tech", company: "DataPlus", start: "2017-06-01", end: "2019-12-20" },
-//       { role: "IT Support", company: "MegaTech", start: "2020-01-01", end: "2023-10-18" }
-//     ]
-//   },
-//   {
-//     id: 5,
-//     name: "Imane Baraka",
-//     role: "Security Agent",
-//     email: "imanebara@example.com",
-//     phone: "+212 600 001 005",
-//     photo: "https://randomuser.me/api/portraits/women/45.jpg",
-//     experiences: [
-//       { role: "Security Officer", company: "Marjane", start: "2016-03-01", end: "2019-08-01" }
-//     ]
-//   },
-//   {
-//     id: 6,
-//     name: "Simo Amrani",
-//     role: "Manager",
-//     email: "simo@example.com",
-//     phone: "+212 600 001 006",
-//     photo: "https://randomuser.me/api/portraits/men/55.jpg",
-//     experiences: [
-//       { role: "Team Leader", company: "Novotel", start: "2018-07-01", end: "2020-01-01" },
-//       { role: "Operations Manager", company: "Ibis Hotel", start: "2020-01-15", end: "2024-06-01" }
-//     ]
-//   },
-//   {
-//     id: 7,
-//     name: "Sara Idrissi",
-//     role: "Receptionist",
-//     email: "sarai@example.com",
-//     phone: "+212 600 001 007",
-//     photo: "https://randomuser.me/api/portraits/women/14.jpg",
-//     experiences: [
-//       { role: "Front Desk", company: "Royal Hotel", start: "2021-02-01", end: "2023-07-30" }
-//     ]
-//   },
-//   {
-//     id: 8,
-//     name: "Mouad El Filali",
-//     role: "Cleaning",
-//     email: "mouad@example.com",
-//     phone: "+212 600 001 008",
-//     photo: "https://randomuser.me/api/portraits/men/66.jpg",
-//     experiences: [
-//       { role: "Housekeeper", company: "Oasis Hotel", start: "2019-05-01", end: "2022-12-10" }
-//     ]
-//   },
-//   {
-//     id: 9,
-//     name: "Nadia Rami",
-//     role: "IT Technician",
-//     email: "nadia@example.com",
-//     phone: "+212 600 001 009",
-//     photo: "https://randomuser.me/api/portraits/women/67.jpg",
-//     experiences: [
-//       { role: "IT Helpdesk", company: "Inwi", start: "2020-03-01", end: "2024-01-01" }
-//     ]
-//   },
-//   {
-//     id: 10,
-//     name: "Zakaria Harrouchi",
-//     role: "Security Agent",
-//     email: "zakaria@example.com",
-//     phone: "+212 600 001 010",
-//     photo: "https://randomuser.me/api/portraits/men/77.jpg",
-//     experiences: [
-//       { role: "Security Guard", company: "Carrefour", start: "2019-01-01", end: "2023-11-20" }
-//     ]
-//   }
-// ];
 
-
+// Get important HTML elements
+const body = document.getElementById('body');
 const workersContainer = document.getElementById("workersContainer");
+const overlay = document.getElementById('overlay');
+const modal = overlay.querySelector('.modal');
+
+const roomCapacity = {
+    'conférence': 4,      // Conference room fits 4 people
+    'Réception': 3,       // Reception fits 3 people
+    'serveurs': 2,        // Server room fits 2 people
+    'Security': 2,        // Security room fits 2 people
+    'personnel': 5,       // Personnel room fits 5 people
+    'archives-room': 1    // Archives room fits 1 person
+};
+
+// Which job roles can work in each room
+const roomRoles = {
+    'conférence': ["Manager", "Receptionist", "IT Technician", "Security Agent"],
+    'Réception': ["Receptionist", "Manager", "Cleaning", "other"],
+    'serveurs': ["IT Technician", "Manager", "Cleaning"],
+    'Security': ["Security Agent", "Manager", "Cleaning"],
+    'personnel': ["Manager", "Receptionist", "IT Technician", "Security Agent", "Cleaning", "other"],
+    'archives-room': ["Manager"]
+};
+
+// =============================================
+// 2. DISPLAY WORKERS IN SIDEBAR
+// =============================================
 
 function renderWorker() {
+    // Clear the workers container
     workersContainer.innerHTML = ``;
+    
+    // If no workers, show message
+    if (workers.length === 0) {
+        workersContainer.innerHTML = `
+            <div class="text-center py-8 text-gray-500">
+                <p>No workers added yet.</p>
+                <p class="text-sm">Click "Add Worker" to get started.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Create a card for each worker
     workers.forEach(worker => {
         const card = document.createElement('div');
-        card.className = "w-[20%] md:user-info w-[97%] p-3 bg-white shadow rounded-lg flex gap-4 items-center border mt-4 ml-1 mb-2";
-
+        card.className = "worker-card p-3 bg-white shadow rounded-lg flex gap-3 items-center border mb-3 mt-4";
+        
+        // Worker photo
         const img = document.createElement('img');
         img.src = worker.photo;
         img.alt = worker.nom;
-        img.className = "w-16 h-16 rounded-full object-cover";
-
+        img.className = "w-12 h-12 rounded-full object-cover";
+        
+        // Worker info
         const info = document.createElement('div');
         info.className = "flex flex-col";
-
+        
         const name = document.createElement('h2');
         name.textContent = worker.nom;
-        name.className = "text-lg font-semibold";
-
+        name.className = "font-semibold";
+        
         const role = document.createElement('p');
         role.textContent = worker.role;
         role.className = "text-sm text-gray-600";
-
+        
         const email = document.createElement('p');
         email.textContent = worker.email;
-        email.className = "text-sm text-gray-500";
-
-        const tel = document.createElement('p');
-        tel.textContent = worker.telephone;
-        tel.className = "text-sm text-gray-500";
-
-        const renderRemoveBtn = document.createElement('button');
-        renderRemoveBtn.textContent = "x";
-        renderRemoveBtn.className = "";
-
+        email.className = "text-xs text-gray-500";
+        
         info.appendChild(name);
         info.appendChild(role);
         info.appendChild(email);
-        info.appendChild(tel);
-
-        card.appendChild(renderRemoveBtn);
+        
         card.appendChild(img);
         card.appendChild(info);
-
         workersContainer.appendChild(card);
-
-        renderRemoveBtn.addEventListener('click', () => {
-            card.remove();
-        });
     });
 }
 
-const exprienceBtn = document.getElementById('experience-btn');
+// =============================================
+// 3. ADD WORKER FORM FUNCTIONALITY
+// =============================================
+
+// Get form elements
 const addBtn = document.getElementById("addBtn");
 const form = document.getElementById("workerForm");
-const experienceCountiner = document.getElementById('experience-countiner');
+const experienceBtn = document.getElementById('experience-btn');
+const experienceContainer = document.getElementById('experience-countiner');
+const addWorkerBtn = document.getElementById('addWorker-btn');
 
+// Show/hide the add worker form
 addBtn.addEventListener("click", () => {
-    if (form.classList.contains("hidden")) {
-        form.classList.remove("hidden");
-        form.setAttribute("aria-hidden", "false");
-    } else {
-        form.classList.add("hidden");
-        form.setAttribute("aria-hidden", "true");
-    }
+    form.classList.toggle("hidden");
 });
 
-exprienceBtn.addEventListener('click', () => {
-    const addExprience = document.createElement('div');
-    const addDateExprience = document.createElement('div');
-    addDateExprience.className = "flex flex-col justify-between gap-4 mt-4";
-    addExprience.className = "flex justify-between gap-4 mt-4";
+// Add experience field when + button clicked
+experienceBtn.addEventListener('click', addExperienceField);
 
-    const input = document.createElement('input');
-    input.type = "text";
-    input.name = "experience";
-    input.placeholder = "experience role";
-    input.className = "experience w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-300";
-
-    const secondInput = document.createElement('input');
-    secondInput.type = "text";
-    secondInput.placeholder = "experience company";
-    secondInput.className = "experience-company mt-4 w-[83%] px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-300";
-
-    const divisExprience = document.createElement('button');
-    divisExprience.textContent = "-";
-    divisExprience.id = "divis-btn";
-    divisExprience.className = "bg-red-600 w-8 h-8 text-center mt-6 rounded-lg text-black hover:bg-red-900 transition text-white";
-
-    const dateInputOne = document.createElement('input');
-    dateInputOne.type = "date";
-    dateInputOne.className = "expDate-1 px-3 py-2 border rounded-lg mt-2";
-
-    const dateInputTwo = document.createElement('input');
-    dateInputTwo.type = "date";
-    dateInputTwo.className = "expDate-2 px-3 py-2 border rounded-lg mt-2";
-
-    divisExprience.addEventListener('click', () => {
-        addExprience.remove();
-        addDateExprience.remove();
-        secondInput.remove();
+function addExperienceField() {
+    const experienceGroup = document.createElement('div');
+    experienceGroup.className = "experience-group  p-3  mb-3 mt-4";
+    
+    experienceGroup.innerHTML = `
+        <div class="flex justify-between mb-2">
+            <label class="font-medium">Experience</label>
+            <button type="button" class="remove-exp bg-red-500 text-white w-6 h-6 rounded text-sm">-</button>
+        </div>
+        <input type="text" placeholder="Job role" class="experience w-full p-2 border rounded mb-2">
+        <input type="text" placeholder="Company" class="experience-company w-full p-2 border rounded mb-2">
+        <div class="grid grid-cols-2 gap-2">
+            <input type="date" class="expDate-1 p-2 border rounded">
+            <input type="date" class="expDate-2 p-2 border rounded">
+        </div>
+    `;
+    
+    experienceContainer.appendChild(experienceGroup);
+    
+    // Remove experience field when - button clicked
+    experienceGroup.querySelector('.remove-exp').addEventListener('click', () => {
+        experienceGroup.remove();
     });
+}
 
-    addExprience.appendChild(input);
-    addExprience.appendChild(divisExprience);
-    experienceCountiner.appendChild(addExprience);
-    experienceCountiner.appendChild(secondInput);
-    addDateExprience.appendChild(dateInputOne);
-    addDateExprience.appendChild(dateInputTwo);
-    experienceCountiner.appendChild(addDateExprience);
-});
-
-const addWorker = document.getElementById('addWorker-btn');
-
-addWorker.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    const userName = document.getElementById('userName');
-    const role = document.getElementById('role');
-    const mail = document.getElementById('email');
-    const phone = document.getElementById('phone');
-    const photo = document.getElementById('photo');
-
-    const nameRegex = /^[A-Za-z\s]{3,}$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^(06|07)\d{8}$/;
-
-    const userNameValue = userName.value.trim();
-    const roleValue = role.value.trim();
-    const mailValue = mail.value.trim();
-    const phoneValue = phone.value.trim();
-    const photoValue = photo.value || 'https://tse1.mm.bing.net/th/id/OIP.EZIxvhz9ns7cKNBMhFvJeQHaHa?pid=Api&P=0&h=180.';
-
-    if (!userNameValue || !roleValue || !mailValue || !phoneValue) {
-        alert("Please fill all input fields.");
+// Handle form submission
+addWorkerBtn.addEventListener('click', (e) => {
+    e.preventDefault(); // Stop form from refreshing page
+    
+    // Get form values
+    const name = document.getElementById('userName').value.trim();
+    const role = document.getElementById('role').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const photo = document.getElementById('photo').value || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80';
+    
+    // Simple validation
+    if (!name || !role || !email || !phone) {
+        alert("Please fill all required fields.");
         return;
     }
-
-    if (!nameRegex.test(userNameValue)) {
-        alert("Invalid name: only letters & spaces, min 3 characters.");
-        return;
-    }
-
-    if (!emailRegex.test(mailValue)) {
-        alert("Invalid email format.");
-        return;
-    }
-
-    if (!phoneRegex.test(phoneValue)) {
-        alert("Invalid phone format.");
-        return;
-    }
-
-    const experiences = document.querySelectorAll('.experience');
-    const companyInputs = document.querySelectorAll('.experience-company');
-    const expDateOne = document.querySelectorAll('.expDate-1');
-    const expDateTwo = document.querySelectorAll('.expDate-2');
-
-    const experiencesArr = [];
-
-    for (let i = 0; i < experiences.length; i++) {
-        const expValue = experiences[i].value.trim();
-        const companyValue = companyInputs[i]?.value?.trim();
-        const start = expDateOne[i].value;
-        const end = expDateTwo[i].value;
-
-        if (!expValue || !companyValue || !start || !end) {
-            alert("Please fill all experience fields.");
-            return;
-        }
-
-        if (new Date(start) > new Date(end)) {
-            alert("Experience start date must be before end date.");
-            return;
-        }
-
-        experiencesArr.push({
-            experience: expValue,
-            exCompany: companyValue,
-            dateStart: start,
-            dateEnd: end
-        });
-    }
-
-    let id = workers.length + 1;
-
+    
+    // Create new worker object
     const newWorker = {
-        id: id,
-        nom: userNameValue,
-        role: roleValue,
-        photo: photoValue,
-        email: mailValue,
-        telephone: phoneValue,
-        experiences: experiencesArr
+        id: workers.length + 1,
+        nom: name,
+        role: role,
+        photo: photo,
+        email: email,
+        telephone: phone,
+        experiences: [],
+        isWorking: false,
+        currentLocation: null
     };
-
+    
+    // Add to workers array and save
     workers.push(newWorker);
     localStorage.setItem("workers", JSON.stringify(workers));
+    
+    // Update display and reset form
     renderWorker();
+    form.reset();
+    experienceContainer.innerHTML = '';
+    form.classList.add("hidden");
 });
 
-renderWorker();
+// =============================================
+// 4. ROOM ASSIGNMENT MODAL SYSTEM
+// =============================================
 
-const openModalBtn = document.getElementById('conférence-btn');
-const overlay = document.getElementById('overlay');
+// Open modal for conference room
+document.getElementById('conférence-btn').addEventListener('click', () => {
+    openRoomModal('conférence');
+});
 
-let lastFocusedElement = null;
-const modal = overlay.querySelector('.modal');
+// Open modal for reception room
+document.getElementById('Réception-btn').addEventListener('click', () => {
+    openRoomModal('Réception');
+});
 
-openModalBtn.addEventListener('click', () => {
-    lastFocusedElement = document.activeElement;
+// Open modal for server room
+document.getElementById('serveurs-btn').addEventListener('click', () => {
+    openRoomModal('serveurs');
+});
+
+// Open modal for security room
+document.getElementById('sécurité-btn').addEventListener('click', () => {
+    openRoomModal('Security');
+});
+
+// Open modal for personnel room
+document.getElementById('personnel-btn').addEventListener('click', () => {
+    openRoomModal('personnel');
+});
+
+// Open modal for archives room
+document.getElementById('archives').addEventListener('click', () => {
+    openRoomModal('archives-room');
+});
+
+function openRoomModal(roomId) {
+    // Show the modal
     overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
-
-    modal.setAttribute("tabindex", "0");
-    modal.focus();
-
-    modalRenderCard();
-});
+    
+    // Fill modal with available workers for this room
+    modalRenderCard(roomId);
+}
 
 function closeModal() {
     overlay.classList.remove('open');
-    overlay.setAttribute('aria-hidden', 'true');
-    if (lastFocusedElement) lastFocusedElement.focus();
 }
 
+// Close modal when clicking outside or on X
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay) closeModal();
 });
 
-const modalCard = document.createElement('div');
-
-function modalRenderCard() {
+function modalRenderCard(roomId) {
+    // Clear modal content
     modal.innerHTML = ``;
-
-    workers.forEach(worker => {
-        const card = document.createElement('div');
-        card.className = "user-info w-full p-4 bg-white shadow rounded-lg flex gap-4 items-center border mt-4";
-
-        const img = document.createElement('img');
-        img.src = worker.photo;
-        img.alt = worker.nom;
-        img.className = "w-16 h-16 rounded-full object-cover";
-
-        const info = document.createElement('div');
-        info.className = "flex flex-col";
-
-        const name = document.createElement('h2');
-        name.textContent = worker.nom;
-        name.className = "text-lg font-semibold";
-
-        const role = document.createElement('p');
-        role.textContent = worker.role;
-        role.className = "text-sm text-gray-600";
-
-        info.appendChild(name);
-        info.appendChild(role);
-
-        card.appendChild(img);
-        card.appendChild(info);
-
-        modal.appendChild(card);
-    });
-
-}
-
-const ResModalBtn = document.getElementById('Réception-btn');
-const servModalBtn = document.getElementById('serveurs-btn');
-const securetModalBtn = document.getElementById('sécurité-btn');
-const personeModalBtn = document.getElementById('personnel-btn');
-const archiveModalBtn = document.getElementById('archives');
-
-ResModalBtn.addEventListener('click', () => {
-    lastFocusedElement = document.activeElement;
-    overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
-    modal.setAttribute("tabindex", "0");
-    modal.focus();
-
-    receptionWorkers();
-});
-
-servModalBtn.addEventListener('click', () => {
-    lastFocusedElement = document.activeElement;
-    overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
-    modal.setAttribute("tabindex", "0");
-    modal.focus();
-    serverWorkers()
     
-});
-
-securetModalBtn.addEventListener('click', () => {
-    lastFocusedElement = document.activeElement;
-    overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
-    modal.setAttribute("tabindex", "0");
-    modal.focus();
-    securetyWorkers();
+    // Add room info
+    const currentWorkers = getWorkersInRoom(roomId).length;
+    const capacity = roomCapacity[roomId];
     
-});
-
-personeModalBtn.addEventListener('click', () => {
-    lastFocusedElement = document.activeElement;
-    overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
-    modal.setAttribute("tabindex", "0");
-    modal.focus();
-    modalRenderCard();
-});
-
-archiveModalBtn.addEventListener('click', () => {
-    lastFocusedElement = document.activeElement;
-    overlay.classList.add('open');
-    overlay.setAttribute('aria-hidden', 'false');
-    modal.setAttribute("tabindex", "0");
-    modal.focus();
-    managerWorkers();
-});
-
-
-function receptionWorkers(){
-const resptionRoom = workers.filter(worker => worker.role === "Receptionist" || worker.role === "Manager" || worker.role === "Cleaning" || worker.role === "other");
-
-    modal.innerHTML = ``;
-
-  resptionRoom.forEach(worker => {
-    const card = document.createElement('div');
-        card.className = "user-info w-full p-4 bg-white shadow rounded-lg flex gap-4 items-center border mt-4";
-
-        const img = document.createElement('img');
-        img.src = worker.photo;
-        img.alt = worker.nom;
-        img.className = "w-16 h-16 rounded-full object-cover";
-
-        const info = document.createElement('div');
-        info.className = "flex flex-col";
-
-        const name = document.createElement('h2');
-        name.textContent = worker.nom;
-        name.className = "text-lg font-semibold";
-
-        const role = document.createElement('p');
-        role.textContent = worker.role;
-        role.className = "text-sm text-gray-600";
-
-        info.appendChild(name);
-        info.appendChild(role);
-
-        card.appendChild(img);
-        card.appendChild(info);
-
-        modal.appendChild(card);
+    modal.innerHTML = `
+        <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+            <h3 class="font-bold text-lg">${roomId} Room</h3>
+            <p>Capacity: ${currentWorkers}/${capacity}</p>
+            <p class="text-sm">Allowed roles: ${roomRoles[roomId].join(', ')}</p>
+        </div>
+    `;
     
-  });
-
-}
-
-function serverWorkers(){
-const serverRoom = workers.filter(worker => worker.role === "IT Technician" || worker.role === "Manager" || worker.role === "Cleaning");
-
-    modal.innerHTML = ``;
-
-  serverRoom.forEach(worker => {
-    const card = document.createElement('div');
-        card.className = "user-info w-full p-4 bg-white shadow rounded-lg flex gap-4 items-center border mt-4";
-
-        const img = document.createElement('img');
-        img.src = worker.photo;
-        img.alt = worker.nom;
-        img.className = "w-16 h-16 rounded-full object-cover";
-
-        const info = document.createElement('div');
-        info.className = "flex flex-col";
-
-        const name = document.createElement('h2');
-        name.textContent = worker.nom;
-        name.className = "text-lg font-semibold";
-
-        const role = document.createElement('p');
-        role.textContent = worker.role;
-        role.className = "text-sm text-gray-600";
-
-        info.appendChild(name);
-        info.appendChild(role);
-
-        card.appendChild(img);
-        card.appendChild(info);
-
-        modal.appendChild(card);
+    // Check if room is full
+    if (currentWorkers >= capacity) {
+        modal.innerHTML += `
+            <div class="text-center py-4 text-red-600">
+                <p>Room is full! Remove workers to add more.</p>
+            </div>
+        `;
+        return;
+    }
     
-  });
-
-}
-
-function securetyWorkers(){
-const secureteRoom = workers.filter(worker => worker.role === "Security Agent" || worker.role === "Manager" || worker.role === "Cleaning");
-
-    modal.innerHTML = ``;
-
-  secureteRoom.forEach(worker => {
-    const card = document.createElement('div');
-        card.className = "user-info w-full p-4 bg-white shadow rounded-lg flex gap-4 items-center border mt-4";
-
-        const img = document.createElement('img');
-        img.src = worker.photo;
-        img.alt = worker.nom;
-        img.className = "w-16 h-16 rounded-full object-cover";
-
-        const info = document.createElement('div');
-        info.className = "flex flex-col";
-
-        const name = document.createElement('h2');
-        name.textContent = worker.nom;
-        name.className = "text-lg font-semibold";
-
-        const role = document.createElement('p');
-        role.textContent = worker.role;
-        role.className = "text-sm text-gray-600";
-
-        info.appendChild(name);
-        info.appendChild(role);
-
-        card.appendChild(img);
-        card.appendChild(info);
-
-        modal.appendChild(card);
+    // Get available workers for this room
+    const availableWorkers = workers.filter(worker => 
+        roomRoles[roomId].includes(worker.role) && !worker.isWorking
+    );
     
-  });
-
-}
-
-function managerWorkers(){
-const archiveRoom = workers.filter(worker => worker.role === "Manager");
-
-    modal.innerHTML = ``;
-
-  archiveRoom.forEach(worker => {
-    const card = document.createElement('div');
-        card.className = "user-info w-full p-4 bg-white shadow rounded-lg flex gap-4 items-center border mt-4";
-
-        const img = document.createElement('img');
-        img.src = worker.photo;
-        img.alt = worker.nom;
-        img.className = "w-16 h-16 rounded-full object-cover";
-
-        const info = document.createElement('div');
-        info.className = "flex flex-col";
-
-        const name = document.createElement('h2');
-        name.textContent = worker.nom;
-        name.className = "text-lg font-semibold";
-
-        const role = document.createElement('p');
-        role.textContent = worker.role;
-        role.className = "text-sm text-gray-600";
-
-        info.appendChild(name);
-        info.appendChild(role);
-
-        card.appendChild(img);
-        card.appendChild(info);
-
-        modal.appendChild(card);
+    // Show message if no workers available
+    if (availableWorkers.length === 0) {
+        modal.innerHTML += `
+            <div class="text-center py-8 text-gray-500">
+                <p>No available workers for this room.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Add available workers to modal
+    availableWorkers.forEach(worker => {
+        const workerCard = document.createElement('div');
+        workerCard.className = "worker-option p-3 border rounded-lg mb-2 flex items-center gap-3 cursor-pointer hover:bg-gray-50";
         
-        card.addEventListener('click', () =>{
-    
-        })
+        workerCard.innerHTML = `
+            <img src="${worker.photo}" alt="${worker.nom}" class="w-10 h-10 rounded-full">
+            <div>
+                <h4 class="font-semibold">${worker.nom}</h4>
+                <p class="text-sm text-gray-600">${worker.role}</p>
+            </div>
+        `;
+        
+        // Assign worker when clicked
+        workerCard.addEventListener('click', () => {
+            assignWorkerToRoom(worker, roomId);
+            closeModal();
+        });
+        
+        modal.appendChild(workerCard);
     });
-
 }
+
+// =============================================
+// 5. WORKER ASSIGNMENT FUNCTIONS
+// =============================================
+
+function assignWorkerToRoom(worker, roomId) {
+    // Mark worker as working and set location
+    worker.isWorking = true;
+    worker.currentLocation = roomId;
+    localStorage.setItem("workers", JSON.stringify(workers));
+    
+    // Add worker card to room
+    const roomElement = document.getElementById(roomId);
+    const workerCard = createWorkerCard(worker, roomId);
+    roomElement.appendChild(workerCard);
+    
+    // Hide + button if room is full
+    updateRoomUI(roomId);
+}
+
+function createWorkerCard(worker, roomId) {
+    const card = document.createElement('div');
+    card.className = "assigned-worker bg-white p-2 rounded border m-1 text-center relative";
+    card.innerHTML = `
+        <button class="remove-btn absolute -top-1 -right-1 bg-red-500 text-white w-5 h-5 rounded-full text-xs">×</button>
+        <img src="${worker.photo}" alt="${worker.nom}" class="w-8 h-8 rounded-full mx-auto mb-1">
+        <p class="text-xs font-semibold truncate">${worker.nom}</p>
+        <p class="text-xs text-gray-600">${worker.role}</p>
+    `;
+    
+    // Show worker info when clicked
+    card.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('remove-btn')) {
+            showWorkerInfo(worker, roomId);
+        }
+    });
+    
+    // Remove worker when X button clicked
+    card.querySelector('.remove-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeWorkerFromRoom(worker, roomId, card);
+    });
+    
+    return card;
+}
+
+function removeWorkerFromRoom(worker, roomId, cardElement) {
+    // Mark worker as available
+    worker.isWorking = false;
+    worker.currentLocation = null;
+    localStorage.setItem("workers", JSON.stringify(workers));
+    
+    // Remove card from room
+    cardElement.remove();
+    
+    // Show + button again
+    updateRoomUI(roomId);
+}
+
+function showWorkerInfo(worker, roomId) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-white p-6 rounded-lg max-w-md w-full m-4">
+            <h2 class="text-xl font-bold mb-4">Worker Information</h2>
+            <div class="space-y-3">
+                <p><strong>Name:</strong> ${worker.nom}</p>
+                <p><strong>Role:</strong> ${worker.role}</p>
+                <p><strong>Email:</strong> ${worker.email}</p>
+                <p><strong>Phone:</strong> ${worker.telephone}</p>
+                <p><strong>Location:</strong> ${roomId}</p>
+            </div>
+            <button class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full">Close</button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close modal when button clicked
+    modal.querySelector('button').addEventListener('click', () => {
+        modal.remove();
+    });
+}
+
+// =============================================
+// 6. HELPER FUNCTIONS
+// =============================================
+
+function getWorkersInRoom(roomId) {
+    return workers.filter(worker => worker.currentLocation === roomId);
+}
+
+function updateRoomUI(roomId) {
+    const roomElement = document.getElementById(roomId);
+    const addButton = roomElement.querySelector('button');
+    const currentWorkers = getWorkersInRoom(roomId).length;
+    
+    // Show or hide + button based on capacity
+    if (currentWorkers >= roomCapacity[roomId]) {
+        addButton.style.display = 'none';
+    } else {
+        addButton.style.display = 'flex';
+    }
+}
+
+// =============================================
+// 7. INITIALIZE APPLICATION
+// =============================================
+
+// Start the application
+document.addEventListener('DOMContentLoaded', function() {
+    // Display existing workers
+    renderWorker();
+    
+    // Load any existing room assignments
+    workers.forEach(worker => {
+        if (worker.isWorking && worker.currentLocation) {
+            const roomElement = document.getElementById(worker.currentLocation);
+            if (roomElement) {
+                const workerCard = createWorkerCard(worker, worker.currentLocation);
+                roomElement.appendChild(workerCard);
+                updateRoomUI(worker.currentLocation);
+            }
+        }
+    });
+});
