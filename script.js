@@ -1,3 +1,7 @@
+// =============================================
+// 1. DATA STORAGE AND CONFIGURATION
+// =============================================
+
 // Get workers from browser storage or start with empty array
 const workers = JSON.parse(localStorage.getItem("workers")) || [];
 
@@ -126,30 +130,98 @@ function addExperienceField() {
     });
 }
 
-
+// Handle form submission with validation
 addWorkerBtn.addEventListener('click', (e) => {
     e.preventDefault();
     
-    const name = document.getElementById('userName').value.trim();
-    const role = document.getElementById('role').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const photo = document.getElementById('photo').value || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80';
-    
-    if (!name || !role || !email || !phone) {
-        alert("Please fill all required fields.");
+    // Get form input elements
+    const userName = document.getElementById('userName');
+    const role = document.getElementById('role');
+    const mail = document.getElementById('email');
+    const phone = document.getElementById('phone');
+    const photo = document.getElementById('photo');
+
+    // Validation patterns
+    const nameRegex = /^[A-Za-z\s]{3,}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^(06|07)\d{8}$/;
+
+    // Get and clean input values
+    const userNameValue = userName.value.trim();
+    const roleValue = role.value.trim();
+    const mailValue = mail.value.trim();
+    const phoneValue = phone.value.trim();
+    const photoValue = photo.value || 'https://tse1.mm.bing.net/th/id/OIP.EZIxvhz9ns7cKNBMhFvJeQHaHa?pid=Api&P=0&h=180.';
+
+    // Check if all required fields are filled
+    if (!userNameValue || !roleValue || !mailValue || !phoneValue) {
+        alert("Please fill all input fields.");
         return;
     }
-    
+
+    // Validate name format
+    if (!nameRegex.test(userNameValue)) {
+        alert("Invalid name: only letters & spaces, min 3 characters.");
+        return;
+    }
+
+    // Validate email format
+    if (!emailRegex.test(mailValue)) {
+        alert("Invalid email format.");
+        return;
+    }
+
+    // Validate phone format
+    if (!phoneRegex.test(phoneValue)) {
+        alert("Invalid phone format. Must start with 06 or 07 and be 10 digits.");
+        return;
+    }
+
+    // Get all experience fields
+    const experiences = document.querySelectorAll('.experience');
+    const companyInputs = document.querySelectorAll('.experience-company');
+    const expDateOne = document.querySelectorAll('.expDate-1');
+    const expDateTwo = document.querySelectorAll('.expDate-2');
+
+    const experiencesArr = [];
+
+    // Validate each experience field
+    for (let i = 0; i < experiences.length; i++) {
+        const expValue = experiences[i].value.trim();
+        const companyValue = companyInputs[i]?.value?.trim();
+        const start = expDateOne[i].value;
+        const end = expDateTwo[i].value;
+
+        // Check if all experience fields are filled
+        if (!expValue || !companyValue || !start || !end) {
+            alert("Please fill all experience fields.");
+            return;
+        }
+
+        // Check if start date is before end date
+        if (new Date(start) > new Date(end)) {
+            alert("Experience start date must be before end date.");
+            return;
+        }
+
+        // Add valid experience to array
+        experiencesArr.push({
+            role: expValue,
+            company: companyValue,
+            start: start,
+            end: end
+        });
+    }
+
     // Create new worker object
     const newWorker = {
         id: workers.length + 1,
-        nom: name,
-        role: role,
-        photo: photo,
-        email: email,
-        telephone: phone,
-        experiences: [],
+        nom: userNameValue,
+        role: roleValue,
+        photo: photoValue,
+        email: mailValue,
+        telephone: phoneValue,
+        experiences: experiencesArr,
         isWorking: false,
         currentLocation: null
     };
@@ -279,8 +351,6 @@ function modalRenderCard(roomId) {
         modal.appendChild(workerCard);
     });
 }
-
-
 
 function assignWorkerToRoom(worker, roomId) {
     // Mark worker as working and set location
