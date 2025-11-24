@@ -1,7 +1,3 @@
-// =============================================
-// 1. DATA STORAGE AND CONFIGURATION
-// =============================================
-
 // Get workers from browser storage or start with empty array
 const workers = JSON.parse(localStorage.getItem("workers")) || [];
 
@@ -130,18 +126,16 @@ function addExperienceField() {
     });
 }
 
-// Handle form submission
+
 addWorkerBtn.addEventListener('click', (e) => {
-    e.preventDefault(); // Stop form from refreshing page
+    e.preventDefault();
     
-    // Get form values
     const name = document.getElementById('userName').value.trim();
     const role = document.getElementById('role').value.trim();
     const email = document.getElementById('email').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const photo = document.getElementById('photo').value || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80';
     
-    // Simple validation
     if (!name || !role || !email || !phone) {
         alert("Please fill all required fields.");
         return;
@@ -286,9 +280,7 @@ function modalRenderCard(roomId) {
     });
 }
 
-// =============================================
-// 5. WORKER ASSIGNMENT FUNCTIONS
-// =============================================
+
 
 function assignWorkerToRoom(worker, roomId) {
     // Mark worker as working and set location
@@ -300,6 +292,7 @@ function assignWorkerToRoom(worker, roomId) {
     const roomElement = document.getElementById(roomId);
     const workerCard = createWorkerCard(worker, roomId);
     roomElement.appendChild(workerCard);
+    document.getElementById(roomId).classList.replace("bg-red-400/40", "bg-red-400/10");
     
     // Hide + button if room is full
     updateRoomUI(roomId);
