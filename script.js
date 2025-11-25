@@ -1,6 +1,4 @@
-// =============================================
-// 1. DATA STORAGE AND CONFIGURATION
-// =============================================
+
 
 // Get workers from browser storage or start with empty array
 const workers = JSON.parse(localStorage.getItem("workers")) || [];
@@ -12,12 +10,12 @@ const overlay = document.getElementById('overlay');
 const modal = overlay.querySelector('.modal');
 
 const roomCapacity = {
-    'conférence': 4,      // Conference room fits 4 people
-    'Réception': 3,       // Reception fits 3 people
-    'serveurs': 2,        // Server room fits 2 people
-    'Security': 2,        // Security room fits 2 people
-    'personnel': 5,       // Personnel room fits 5 people
-    'archives-room': 1    // Archives room fits 1 person
+    'conférence': 4,      
+    'Réception': 3,       
+    'serveurs': 2,        
+    'Security': 2,        
+    'personnel': 5,       
+    'archives-room': 1    
 };
 
 // Which job roles can work in each room
@@ -30,9 +28,6 @@ const roomRoles = {
     'archives-room': ["Manager"]
 };
 
-// =============================================
-// 2. DISPLAY WORKERS IN SIDEBAR
-// =============================================
 
 function renderWorker() {
     // Clear the workers container
@@ -86,9 +81,6 @@ function renderWorker() {
     });
 }
 
-// =============================================
-// 3. ADD WORKER FORM FUNCTIONALITY
-// =============================================
 
 // Get form elements
 const addBtn = document.getElementById("addBtn");
@@ -237,9 +229,7 @@ addWorkerBtn.addEventListener('click', (e) => {
     form.classList.add("hidden");
 });
 
-// =============================================
-// 4. ROOM ASSIGNMENT MODAL SYSTEM
-// =============================================
+
 
 // Open modal for conference room
 document.getElementById('conférence-btn').addEventListener('click', () => {
@@ -275,7 +265,6 @@ function openRoomModal(roomId) {
     // Show the modal
     overlay.classList.add('open');
     
-    // Fill modal with available workers for this room
     modalRenderCard(roomId);
 }
 
@@ -403,7 +392,6 @@ function removeWorkerFromRoom(worker, roomId, cardElement) {
     // Remove card from room
     cardElement.remove();
     
-    // Show + button again
     updateRoomUI(roomId);
 }
 
@@ -432,9 +420,7 @@ function showWorkerInfo(worker, roomId) {
     });
 }
 
-// =============================================
-// 6. HELPER FUNCTIONS
-// =============================================
+
 
 function getWorkersInRoom(roomId) {
     return workers.filter(worker => worker.currentLocation === roomId);
@@ -453,9 +439,6 @@ function updateRoomUI(roomId) {
     }
 }
 
-// =============================================
-// 7. INITIALIZE APPLICATION
-// =============================================
 
 // Start the application
 document.addEventListener('DOMContentLoaded', function() {
